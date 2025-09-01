@@ -1,0 +1,184 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+public class TicTacToe3 
+{
+	JFrame fr=new JFrame();
+	JLabel la=new JLabel(new ImageIcon(getClass().getResource("images/t2.jpg")));
+	JPanel[] pa=new JPanel[3]; 
+	JLabel msg=new JLabel("First player turn...");
+	JButton[] bt=new JButton[9];
+	JButton reset=new JButton("RESET");
+	ImageIcon icon1=new ImageIcon(getClass().getResource("images/user1.png"));
+	ImageIcon icon2=new ImageIcon(getClass().getResource("images/user2.png"));
+	int player=1,count=0;
+	boolean winnnerFound=false;
+	public TicTacToe3()
+	{
+		fr.setSize(500,630);
+		fr.setLocationRelativeTo(null);
+		fr.setResizable(false);
+		fr.setDefaultCloseOperation(3);
+		fr.add(la);
+		addPanels();
+		fr.setVisible(true);
+	}
+	private void addPanels()
+	{
+		la.setLayout(null);
+		for(int i=0;i<pa.length;i++)
+		{
+			pa[i]=new JPanel();
+			la.add(pa[i]);
+		}
+		pa[0].setBounds(50,30,400,40);
+		pa[1].setBounds(50,100,400,400);
+		pa[2].setBounds(50,530,400,40);
+		pa[0].setBackground(Color.cyan);
+		addMsg();
+	}
+	private void addMsg()
+	{
+		pa[0].add(msg);
+		msg.setFont(new Font("elephant",0,30));
+		msg.setForeground(Color.blue);
+		//pa[0].setBackground(Color.magenta);
+		addButtons();
+	}
+	private void addButtons()
+	{
+		pa[1].setLayout(new GridLayout(3,3));
+		TicListener listener=new TicListener();
+		for(int i=0;i<bt.length;i++)
+		{
+			bt[i]=new JButton();
+			bt[i].addActionListener(listener);
+			bt[i].setBackground(Color.yellow);
+			pa[1].add(bt[i]);
+		}
+		addResetButton();
+	}
+	private void addResetButton()
+	{
+		pa[2].add(reset);
+		reset.setFont(new Font("arial",0,20));
+		pa[2].setOpaque(false);
+		reset.addActionListener(new ResetListener());
+		reset.setEnabled(false);
+	}
+	class TicListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			//Here getSource() method will return button(reference of button) that would be clicked by user
+			//bb will store reference of button clicked
+			JButton bb=(JButton)evt.getSource();
+			if(bb.getIcon()!=null || winnnerFound)//When click button would have already image
+			{
+				JOptionPane.showMessageDialog(fr,"Wrong clicked");
+				return;//Terminates execution of current method
+			}
+			if(player==1)
+			{
+				bb.setIcon(icon1);
+				player=2;
+				msg.setText("Second player turn");
+				msg.setForeground(Color.magenta);
+			}
+			else if(player==2)
+			{
+				bb.setIcon(icon2);
+				player=1;
+				msg.setText("First player turn");
+				msg.setForeground(Color.blue);
+			}
+			findWinner();
+			count++;
+			if(!winnnerFound && count==9)
+			{
+				gameOver();
+				JOptionPane.showMessageDialog(fr,"No one is winner");
+			}
+		}
+		private void findWinner()
+		{
+			if(bt[0].getIcon()==icon1 && bt[1].getIcon()==icon1 && bt[2].getIcon()==icon1)
+				announceWinner(0,1,2);
+			if(bt[0].getIcon()==icon2 && bt[1].getIcon()==icon2 && bt[2].getIcon()==icon2)
+				announceWinner(0,1,2);
+			if(bt[3].getIcon()==icon1 && bt[4].getIcon()==icon1 && bt[5].getIcon()==icon1)
+				announceWinner(3,4,5);
+			if(bt[3].getIcon()==icon2 && bt[4].getIcon()==icon2 && bt[5].getIcon()==icon2)
+				announceWinner(3,4,5);
+			if(bt[6].getIcon()==icon1 && bt[7].getIcon()==icon1 && bt[8].getIcon()==icon1)
+				announceWinner(6,7,8);
+			if(bt[6].getIcon()==icon2 && bt[7].getIcon()==icon2 && bt[8].getIcon()==icon2)
+				announceWinner(6,7,8);
+			//columnwise
+			if(bt[0].getIcon()==icon1 && bt[3].getIcon()==icon1 && bt[6].getIcon()==icon1)
+				announceWinner(0,3,6);
+			if(bt[0].getIcon()==icon2 && bt[3].getIcon()==icon2 && bt[6].getIcon()==icon2)
+				announceWinner(0,3,6);
+			if(bt[1].getIcon()==icon1 && bt[4].getIcon()==icon1 && bt[7].getIcon()==icon1)
+				announceWinner(1,4,7);
+			if(bt[1].getIcon()==icon2 && bt[4].getIcon()==icon2 && bt[7].getIcon()==icon2)
+				announceWinner(1,4,7);
+			if(bt[2].getIcon()==icon1 && bt[5].getIcon()==icon1 && bt[8].getIcon()==icon1)
+				announceWinner(2,5,8);
+			if(bt[2].getIcon()==icon2 && bt[5].getIcon()==icon2 && bt[8].getIcon()==icon2)
+				announceWinner(2,5,8);
+			//diagonal
+			if(bt[0].getIcon()==icon1 && bt[4].getIcon()==icon1 && bt[8].getIcon()==icon1)
+				announceWinner(0,4,8);
+			if(bt[0].getIcon()==icon2 && bt[4].getIcon()==icon2 && bt[8].getIcon()==icon2)
+				announceWinner(0,4,8);
+			if(bt[2].getIcon()==icon1 && bt[4].getIcon()==icon1 && bt[6].getIcon()==icon1)
+				announceWinner(2,4,6);
+			if(bt[2].getIcon()==icon2 && bt[4].getIcon()==icon2 && bt[6].getIcon()==icon2)
+				announceWinner(2,4,6);
+		}
+		private void announceWinner(int i,int j,int k)
+		{
+			winnnerFound=true;
+			gameOver();
+			bt[i].setBackground(Color.green);
+			bt[j].setBackground(Color.green);
+			bt[k].setBackground(Color.green);	
+			if(player==2)
+				JOptionPane.showMessageDialog(fr,"First player won");
+			else
+				JOptionPane.showMessageDialog(fr,"Second player won");
+		}
+		private void gameOver()
+		{
+			reset.setEnabled(true);
+			msg.setText("Game over...");
+			msg.setForeground(Color.red);
+			pa[0].setBackground(Color.blue);
+		}
+	}
+	class ResetListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			pa[0].setBackground(Color.cyan);
+			msg.setForeground(Color.blue);
+			msg.setText("First player turn...");
+			for(JButton bb:bt)
+			{
+				bb.setIcon(null);
+				bb.setBackground(Color.yellow);
+			}
+			player=1;
+			count=0;
+			winnnerFound=false;
+			reset.setEnabled(false);
+		}
+	}
+	
+	public static void main(String[] args) 
+	{
+		new TicTacToe3();
+	}
+}
